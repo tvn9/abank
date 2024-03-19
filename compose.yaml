@@ -1,0 +1,34 @@
+services:
+frontend:
+  image: cmd/webapp
+  ports:
+    - "443:8043"
+  networks:
+    - front-tier
+    - back-tier
+  configs:
+    - httpd-config
+  secrets:
+    - server-certificate
+
+  backend:
+    image: mariadb:lts
+    volumes:
+      - dbdata:/mysql/data
+    networks:
+      - back-tier
+
+volumes:
+  dbdata:
+    driver: flocker
+    driver_opts:
+      size: "10Gib"
+
+configs:
+  httpd-config:
+    external: true
+
+networks:
+  # The presense of the objects is sufficient to define them
+  front-tier: {}
+  back-tier: {}
